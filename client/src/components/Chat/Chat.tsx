@@ -1,20 +1,38 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { getMessages } from '../../actions/chat';
 import './Chat.css';
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:5000');
+
+interface Message {
+  text: string;
+}
 
 interface ChatProps {
-  messages: Array<{
-    text: String;
-  }>;
+  messages: Message[];
+  getMessages: () => Message[];
 }
-class Chat extends React.Component<ChatProps, {}> {
+
+class Chat extends React.Component<ChatProps, any> {
   constructor(props: ChatProps) {
     super(props);
+    this.state = {
+      messages: []
+    };
+    socket.on('get-messages', (messages: Message[] = []) => {
+      this.setState({messages});   
+      console.log(this.state);
+    });
+    socket.on('new-message', (message: Message) => {
+      this.setState({messages: [...this.state.messages, message]});
+    });
   }
   render() {
     return (
       <div className="Chat">
-        {this.props.messages.map((message, i) => <div key={i}>{message.text}</div>)}
+        {this.state.messages.map((message, i) => <div key={i}>{message.text}</div>)}
       </div>
       );
     }
@@ -25,4 +43,4 @@ const mapStateToProps = (state) => {
     messages: state
   };
 };
-export default connect(mapStateToProps, null)(Chat);
+export default connect(mapStateToProps, { getMessages })(Chat);

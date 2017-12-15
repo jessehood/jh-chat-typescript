@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@types/redux": "^3.6.0",
+    "axios": "^0.17.1",
     "bootstrap": "3",
     "react": "^16.2.0",
     "react-bootstrap": "^0.31.5",
@@ -12,6 +13,7 @@
     "react-scripts-ts": "2.8.0",
     "redux": "^3.7.2",
     "redux-devtools-extension": "^2.13.2",
+    "redux-promise": "^0.5.3",
     "redux-promise-middleware": "^5.0.0",
     "socket.io": "^2.0.4",
     "socket.io-client": "^2.0.4"

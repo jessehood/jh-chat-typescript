@@ -22,9 +22,6 @@ class ChatInput extends React.Component<ChatInputProps, ChatInputState> {
       text: '',
       message: ''
     };
-    socket.on('message-client', (message) => {
-      this.props.addMessage(message);
-    });
     
   }
 
@@ -34,7 +31,7 @@ class ChatInput extends React.Component<ChatInputProps, ChatInputState> {
 
   submitMessage = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    this.props.addMessage({message: this.state.text});
+    this.props.addMessage({text: this.state.text});
     socket.emit('message-server', this.state.text);
     this.messageInput.value = '';
   }
