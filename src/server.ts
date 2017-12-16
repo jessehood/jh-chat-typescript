@@ -1,14 +1,13 @@
 import { Application, Request, Response, NextFunction } from 'express';
-const express = require('express');
+import * as express from 'express';
+import Messages from './models/Messages';
+import Users from './models/Users';
 const app: Application = express();
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const ioHttp = require('http').Server(app);
+const io = require('socket.io')(ioHttp);
 
-interface Message {
-  text: string;
-}
-
-const messages: Message[] = [];
+const messagesLocal = new Messages();
+const usersLocal = new Users();
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -19,12 +18,21 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.get('/', (req: Request, res: Response) => res.send('Hello World!'));
 
 app.get('/api/messages', (req: Request, res: Response) => {
-  res.send(messages);
+  res.send(messagesLocal.messages);
+});
+
+app.get('/api/users', (req: Request, res: Response) => {
+  res.send(usersLocal.users);
+});
+
+app.post('/api/users/new-user', (req: Request, res: Response) => {
+  const user = req.body;
+  usersLocal.addUser(user);
 });
 
 io.on('connection', (socket: any) => {
   socket.emit('connected-client', 'connected');
-  socket.emit('get-messages', messages);
+  socket.emit('get-messages', messagesLocal.messages);
 
   socket.on('disconnect', (client: any) => {
     console.log ('Client disconnected');
@@ -32,10 +40,10 @@ io.on('connection', (socket: any) => {
 
   socket.on('message-server', (data: string) => {
     const message = { text: data };
-    messages.push(message);
+    messagesLocal.addMessage(message);
     socket.broadcast.emit('new-message', message);
     console.log('current messages:');
-    console.log(messages);
+    console.log(messagesLocal);
   });
 });
 

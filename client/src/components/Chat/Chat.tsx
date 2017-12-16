@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { getMessages } from '../../actions/chat';
 import './Chat.css';
 import io from 'socket.io-client';
+import ChatMessage from '../ChatMessage/ChatMessage';
 
 const socket = io('http://localhost:5000');
 
@@ -32,7 +33,7 @@ class Chat extends React.Component<ChatProps, any> {
   render() {
     return (
       <div className="Chat">
-        {this.state.messages.map((message, i) => <div key={i}>{message.text}</div>)}
+        {this.state.messages.map((message, i) => <ChatMessage key={i} text={message.text} />)}
       </div>
       );
     }

@@ -1,4 +1,5 @@
-import { TypeKeys, ActionsTypes } from '../actions/chat';
+import { TypeKeys } from '../actions/chat';
+import { ActionsTypes } from '../types/actions';
 export type State = Array<{
   text: String;
 }>;

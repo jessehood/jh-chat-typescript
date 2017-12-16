@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
+import ModalLogin from '../ModalLogin/ModalLogin';
 
 class NavigationBar extends React.Component {
   render() {
@@ -31,9 +32,8 @@ class NavigationBar extends React.Component {
             <NavItem eventKey={1} href="#">
               Link Right
             </NavItem>
-            <NavItem eventKey={2} href="#">
-              Link Right
-            </NavItem>
+            
+            <ModalLogin />
           </Nav>
         </Navbar.Collapse>
       </Navbar>
