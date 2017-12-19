@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { getMessages } from '../../actions/chat';
 import './Chat.css';
 import io from 'socket.io-client';
 import ChatMessage from '../ChatMessage/ChatMessage';
@@ -11,13 +9,12 @@ interface Message {
   text: string;
 }
 
-interface ChatProps {
+interface ChatState {
   messages: Message[];
-  getMessages: () => Message[];
 }
 
-class Chat extends React.Component<ChatProps, any> {
-  constructor(props: ChatProps) {
+class Chat extends React.Component<any, ChatState> {
+  constructor(props: any) {
     super(props);
     this.state = {
       messages: []
@@ -38,10 +35,4 @@ class Chat extends React.Component<ChatProps, any> {
       );
     }
 }
-
-const mapStateToProps = (state) => {
-  return {
-    messages: state
-  };
-};
-export default connect(mapStateToProps, { getMessages })(Chat);
+export default Chat;

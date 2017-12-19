@@ -1,14 +1,20 @@
-import { Message } from '../types/Message';
+import { Entity, ObjectID, ObjectIdColumn, Column } from 'typeorm';
 
-class User {
-  id: number;
-  username: string;
-  messages: Messsage[];
-  constructor(username: string, id: number, messages: Message[] = []) {
-    this.username = username;
-    this.id = id;
-    this.messages = messages;
-  }
+@Entity()
+export default class User {
+
+    @ObjectIdColumn()
+    id: ObjectID;
+
+    @Column()
+    username: string;
 }
 
-export default User;
+/* example usage
+const user = new User();
+user.username = 'test-user';
+const manager = getMongoManager();
+await manager.save(user);
+
+console.log(await manager.findOne(User));
+*/

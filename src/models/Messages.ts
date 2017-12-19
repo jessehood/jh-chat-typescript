@@ -1,16 +1,12 @@
-import { Message } from '../types/Message';
-class Messages {
-  storage: Message[];
-  constructor(storage: Message[] = []) {
-    this.storage = storage;
-  }
+import { Entity, ObjectID, ObjectIdColumn, Column } from 'typeorm';
+import User from './User';
 
-  addMessage(message: Message) {
-    this.storage.push(message);
-  }
+@Entity()
+export default class Messages {
 
-  get messages() {
-    return this.storage;
-  }
+    @ObjectIdColumn()
+    id: ObjectID;
+
+    @Column()
+    text: string;
 }
-export default Messages;

@@ -1,51 +1,51 @@
+// type imports
 import { Application, Request, Response, NextFunction } from 'express';
+// end type imports
+
+import 'reflect-metadata'; // for typeorm decorators
 import * as express from 'express';
+import { createConnection, Connection, getMongoManager } from 'typeorm';
 import Messages from './models/Messages';
-import Users from './models/Users';
 const app: Application = express();
 const ioHttp = require('http').Server(app);
 const io = require('socket.io')(ioHttp);
 
-const messagesLocal = new Messages();
-const usersLocal = new Users();
-
-app.use((req: Request, res: Response, next: NextFunction) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
-
-app.get('/', (req: Request, res: Response) => res.send('Hello World!'));
-
-app.get('/api/messages', (req: Request, res: Response) => {
-  res.send(messagesLocal.messages);
-});
-
-app.get('/api/users', (req: Request, res: Response) => {
-  res.send(usersLocal.users);
-});
-
-app.post('/api/users/new-user', (req: Request, res: Response) => {
-  const user = req.body;
-  usersLocal.addUser(user);
-});
-
-io.on('connection', (socket: any) => {
-  socket.emit('connected-client', 'connected');
-  socket.emit('get-messages', messagesLocal.messages);
-
-  socket.on('disconnect', (client: any) => {
-    console.log ('Client disconnected');
+(async () => {
+  const connection: Connection = await createConnection({
+    type: 'mongodb',
+    host: 'localhost',
+    port: 29000,
+    database: 'chat',
+    entities: [ Messages ]
   });
 
-  socket.on('message-server', (data: string) => {
-    const message = { text: data };
-    messagesLocal.addMessage(message);
-    socket.broadcast.emit('new-message', message);
-    console.log('current messages:');
-    console.log(messagesLocal);
+  const manager = getMongoManager();
+
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
   });
-});
+
+  app.get('/', (req: Request, res: Response) => res.send('Hello World!'));
+
+  io.on('connection', async (socket: any) => {
+    socket.emit('connected-client', 'connected');
+    socket.emit('get-messages', await manager.find(Messages));
+
+    socket.on('disconnect', (client: any) => {
+      console.log('Client disconnected');
+    });
+
+    socket.on('message-server', async (data: string) => {
+      const message = new Messages();
+      message.text = data;
+      socket.broadcast.emit('new-message', message);
+      await manager.save(message);
+    });
+  });
+})();
+
 
 io.listen(5000);
 app.listen(4000, () => console.log('Example app listening on port 4000!'));
